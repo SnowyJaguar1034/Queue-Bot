@@ -162,7 +162,7 @@ export class BlacklistCommand extends AdminCommand {
   static readonly DELETE_OPTIONS = {
     blacklisteds: new BlacklistedsOption({
       required: true,
-      description: "Blacklisted users and roles to un-blacklist",
+      description: "Blacklisted users and roles to Whitelist",
     }),
   };
 
@@ -183,7 +183,7 @@ export class BlacklistCommand extends AdminCommand {
         return `- ${mentionableMention(blacklisted)} in ${queueMention(queue)}`;
       })
       .join("\n");
-    await inter.respond(`Un-blacklisted:\n${blacklistedStr}`, true);
+    await inter.respond(`Whitelisted:\n${blacklistedStr}`, true);
 
     const updatedQueues = updatedQueueIds.map((id) =>
       inter.store.dbQueues().get(id)
