@@ -8,34 +8,50 @@ import { MemberUtils } from "../../utils/member.utils.ts";
 import { queueMention } from "../../utils/string.utils.ts";
 
 export class JoinCommand extends EveryoneCommand {
-	static readonly ID = "join";
+  static readonly ID = "join";
 
-	join = JoinCommand.join;
+  join = JoinCommand.join;
 
-	static readonly JOIN_OPTIONS = {
-		queue: new QueueOption({ required: true, description: "Queue to join" }),
-		message: new MessageOption({ description: "Message to display next to name in queue" }),
-	};
+  static readonly JOIN_OPTIONS = {
+    queue: new QueueOption({ required: true, description: "Queue to join" }),
+    message: new MessageOption({
+      description: "Message to display next to your name in the queue",
+    }),
+  };
 
-	data = new SlashCommandBuilder()
-		.setName(JoinCommand.ID)
-		.setDescription("Join a queue")
-		.addStringOption(JoinCommand.JOIN_OPTIONS.queue.build)
-		.addStringOption(JoinCommand.JOIN_OPTIONS.message.build);
+  data = new SlashCommandBuilder()
+    .setName(JoinCommand.ID)
+    .setDescription("Join a queue")
+    .addStringOption(JoinCommand.JOIN_OPTIONS.queue.build)
+    .addStringOption(JoinCommand.JOIN_OPTIONS.message.build);
 
-	// ====================================================================
-	//                           /join
-	// ====================================================================
+  // ====================================================================
+  //                           /join
+  // ====================================================================
 
-	static async join(inter: SlashInteraction) {
-		const queue = await JoinCommand.JOIN_OPTIONS.queue.get(inter);
-		const message = JoinCommand.JOIN_OPTIONS.message.get(inter);
+  static async join(inter: SlashInteraction) {
+    const queue = await JoinCommand.JOIN_OPTIONS.queue.get(inter);
+    const message = JoinCommand.JOIN_OPTIONS.message.get(inter);
 
-		await MemberUtils.insertJsMember({ store: inter.store, queue, jsMember: inter.member, message });
+    await MemberUtils.insertJsMember({
+      store: inter.store,
+      queue,
+      jsMember: inter.member,
+      message,
+    });
 
-		await inter.respond({
-			content: `Joined the '${queueMention(queue)}' queue.`,
-			embeds: [await MemberUtils.getMemberDisplayLine(inter.store, queue, inter.member.id)],
-		}, true);
-	}
+    await inter.respond(
+      {
+        content: `Joined the '${queueMention(queue)}' queue.`,
+        embeds: [
+          await MemberUtils.getMemberDisplayLine(
+            inter.store,
+            queue,
+            inter.member.id
+          ),
+        ],
+      },
+      true
+    );
+  }
 }
